@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>CodeSherlock</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/2.47.0/iconfont/tabler-icons.min.css" />
+<style>
+  :root {
+    --bg: #f5f6f8;
+    --surface-1: #ffffff;
+    --surface-2: #f0f1f3;
+    --border: #e2e4e8;
+    --text-primary: #14171b;
+    --text-secondary: #5b6270;
+    --text-muted: #8a90a0;
+    --accent: #3868e0;
+    --accent-bg: #e8eefd;
+    --danger: #c53030;
+    --danger-bg: #fbeaea;
+    --warning: #b7791f;
+    --warning-bg: #fdf3e2;
+    --success: #2f855a;
+    --success-bg: #e8f5ee;
+    --radius: 8px;
+    --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --font-mono: "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+  }
+  html[data-theme="dark"] {
+    --bg: #0d0f12;
+    --surface-1: #16191d;
+    --surface-2: #1d2126;
+    --border: #2a2f36;
+    --text-primary: #e9ebee;
+    --text-secondary: #9aa1ab;
+    --text-muted: #6b7280;
+    --accent: #5c8dfa;
+    --accent-bg: #1c2a4a;
+    --danger: #f0605c;
+    --danger-bg: #3a1e1e;
+    --warning: #f2b04d;
+    --warning-bg: #3a2e14;
+    --success: #5fc98c;
+    --success-bg: #16301f;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    font-size: 14px;
+  }
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+  button {
+    font-family: var(--font-sans);
+    font-size: 13px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background: var(--surface-1);
+    color: var(--text-primary);
+    padding: 8px 14px;
+    cursor: pointer;
+  }
+  button:hover { border-color: var(--text-muted); }
+  button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  button:disabled { opacity: 0.6; cursor: default; }
+  input[type="password"], input[type="text"] {
+    width: 100%;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text-primary);
+    padding: 9px 12px;
+    font-size: 13px;
+  }
+  input:focus { outline: none; border-color: var(--accent); }
+  a { color: var(--accent); text-decoration: none; }
+  code { font-family: var(--font-mono); background: var(--surface-2); padding: 1px 5px; border-radius: 4px; }
+  .hidden { display: none !important; }
+
+  #setup-screen { display: flex; justify-content: center; padding-top: 8vh; }
+  .setup-card { width: 100%; max-width: 380px; background: var(--surface-1); border: 1px solid var(--border); border-radius: 14px; padding: 2rem 1.75rem; }
+  .setup-icon { width: 44px; height: 44px; border-radius: 12px; background: var(--accent-bg); display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; }
+  .setup-icon i { font-size: 22px; color: var(--accent); }
+  .setup-card h1 { text-align: center; font-size: 18px; font-weight: 600; margin: 0 0 4px; }
+  .setup-card .tagline { text-align: center; color: var(--text-secondary); font-size: 13px; margin: 0 0 1.5rem; }
+  .setup-card .desc { text-align: center; color: var(--text-secondary); font-size: 13px; margin: 0 0 1.25rem; }
+  .field-label { font-size: 13px; margin-bottom: 6px; display: block; }
+  .field-wrap { position: relative; margin-bottom: 4px; }
+  .field-wrap input { padding-right: 36px; font-family: var(--font-mono); }
+  .field-toggle { position: absolute; right: 2px; top: 2px; height: 32px; width: 32px; border: none; background: transparent; display: flex; align-items: center; justify-content: center; color: var(--text-muted); }
+  .error-text { font-size: 12px; color: var(--danger); margin: 0 0 8px; display: none; }
+  .hint-text { font-size: 12px; color: var(--text-muted); margin: 0 0 1.5rem; }
+  .connect-btn { width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px; }
+  .keychain-note { display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 12px; color: var(--text-muted); margin: 1.25rem 0 0; }
+
+  #repo-screen { display: flex; justify-content: center; padding-top: 6vh; }
+  .repo-card { width: 100%; max-width: 560px; background: var(--surface-1); border: 1px solid var(--border); border-radius: 14px; padding: 2rem 1.75rem; }
+  .repo-card h1 { text-align: center; font-size: 18px; font-weight: 600; margin: 0 0 4px; }
+  .repo-card .desc { text-align: center; color: var(--text-secondary); font-size: 13px; margin: 0 0 1.5rem; }
+  .repo-manual-row { display: flex; gap: 8px; margin-bottom: 6px; }
+  .repo-manual-row input { font-family: var(--font-mono); }
+  .repo-error { font-size: 12px; color: var(--danger); margin: 0 0 4px; display: none; }
+  .repo-success { font-size: 12px; color: var(--success); margin: 0 0 4px; display: none; }
+  .divider-row { display: flex; align-items: center; gap: 10px; margin: 1.25rem 0; color: var(--text-muted); font-size: 12px; }
+  .divider-row .line { flex: 1; height: 1px; background: var(--border); }
+  .breadcrumb { font-size: 12.5px; color: var(--text-secondary); margin-bottom: 8px; word-break: break-all; }
+  .breadcrumb button { border: none; background: none; padding: 0; color: var(--accent); font-size: 12.5px; cursor: pointer; }
+  .browser-list { border: 1px solid var(--border); border-radius: var(--radius); max-height: 260px; overflow-y: auto; }
+  .browser-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; font-size: 13px; border-bottom: 1px solid var(--border); cursor: pointer; }
+  .browser-row:last-child { border-bottom: none; }
+  .browser-row:hover { background: var(--surface-2); }
+  .browser-row .name { display: flex; align-items: center; gap: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .browser-row .badge-mini { font-size: 10.5px; padding: 2px 7px; border-radius: var(--radius); background: var(--accent-bg); color: var(--accent); font-weight: 500; }
+  .browser-row .select-btn { font-size: 11.5px; padding: 4px 10px; }
+  .browser-empty { padding: 1.25rem; text-align: center; color: var(--text-muted); font-size: 13px; }
+
+  header.app-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 1.5rem; }
+  header.app-header h1 { font-size: 19px; margin: 0 0 4px; display: flex; align-items: center; gap: 8px; }
+  header.app-header .meta { font-size: 13px; color: var(--text-secondary); margin: 0; }
+  .header-actions { display: flex; gap: 8px; }
+
+  .cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 1.5rem; }
+  .metric-card { background: var(--surface-1); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; }
+  .metric-card .label { margin: 0 0 4px; font-size: 12.5px; }
+  .metric-card .value { margin: 0; font-size: 24px; font-weight: 600; }
+
+  .toolbar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1rem; align-items: center; justify-content: space-between; }
+  .chips { display: flex; gap: 8px; flex-wrap: wrap; }
+  .chip { font-size: 12.5px; padding: 6px 12px; }
+  .chip.active { background: var(--accent-bg); color: var(--accent); border-color: var(--accent); }
+  .search-input { width: 220px; }
+
+  .table-wrap { border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+  .table-head, .row-head {
+    display: grid;
+    grid-template-columns: minmax(0,2.2fr) 1.3fr 0.8fr 1fr 24px;
+    align-items: center;
+    padding: 10px 14px;
+  }
+  .table-head { font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--text-muted); border-bottom: 1px solid var(--border); }
+  .row { border-bottom: 1px solid var(--border); }
+  .row:last-child { border-bottom: none; }
+  .row-head { cursor: pointer; font-size: 13px; }
+  .row-head .filename { font-family: var(--font-mono); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .row-head .pkg { color: var(--text-secondary); font-size: 12.5px; }
+  .badge { font-size: 11.5px; padding: 3px 10px; border-radius: var(--radius); font-weight: 500; }
+  .chev { transition: transform 0.15s ease; color: var(--text-muted); }
+  .chev.open { transform: rotate(180deg); }
+  .diff-panel { background: var(--surface-2); padding: 4px 14px 12px; }
+  .method-block { margin-top: 10px; }
+  .method-name { font-family: var(--font-mono); font-size: 12px; color: var(--text-secondary); margin: 0 0 4px; display: flex; align-items: center; justify-content: space-between; }
+  .diff-line { font-family: var(--font-mono); font-size: 12px; line-height: 1.6; padding: 1px 6px; border-radius: 4px; white-space: pre-wrap; word-break: break-word; }
+  .diff-add { background: var(--success-bg); color: var(--success); }
+  .diff-del { background: var(--danger-bg); color: var(--danger); }
+  .diff-ctx { color: var(--text-secondary); }
+  .copy-btn { font-size: 11px; padding: 2px 8px; }
+
+  .section-title { font-size: 13px; font-weight: 600; margin: 2rem 0 0.75rem; }
+  .patch-item, .unverified-item { font-size: 13px; color: var(--text-secondary); padding: 8px 12px; background: var(--surface-1); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 6px; font-family: var(--font-mono); }
+
+  .fetch-warning { background: var(--danger-bg); border: 1px solid var(--danger); border-radius: var(--radius); padding: 10px 14px; margin-bottom: 1.25rem; font-size: 13px; }
+  .fetch-warning .title { color: var(--danger); font-weight: 600; margin: 0 0 4px; display: flex; align-items: center; gap: 6px; }
+  .fetch-warning .line { color: var(--text-secondary); font-family: var(--font-mono); font-size: 12px; margin: 2px 0; }
+
+  .empty-state { text-align: center; padding: 3rem 1rem; color: var(--text-secondary); }
+  .spinner { width: 16px; height: 16px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.7s linear infinite; display: inline-block; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div id="setup-screen" class="hidden">
+    <div class="setup-card">
+      <div class="setup-icon"><i class="ti ti-search"></i></div>
+      <h1>CodeSherlock</h1>
+      <p class="tagline">Every override leaves a clue.</p>
+      <p class="desc">Connect GitHub to compare your app against punchh-components and punchh-olo source.</p>
+
+      <label class="field-label" for="pat">Personal access token</label>
+      <div class="field-wrap">
+        <input id="pat" type="password" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" autocomplete="off" />
+        <button class="field-toggle" id="toggle-visibility" aria-label="Show token" type="button"><i class="ti ti-eye"></i></button>
+      </div>
+      <p id="setup-error" class="error-text"></p>
+      <p class="hint-text">Needs <code>repo</code> scope &middot; <a href="https://github.com/settings/tokens/new" target="_blank" rel="noopener">Create a token</a></p>
+
+      <button class="primary connect-btn" id="connect-btn" type="button">
+        <i class="ti ti-plug-connected"></i>
+        <span id="connect-label">Connect and scan</span>
+      </button>
+
+      <p class="keychain-note"><i class="ti ti-lock"></i> Stored in your OS keychain. Asked once.</p>
+    </div>
+  </div>
+
+  <div id="repo-screen" class="hidden">
+    <div class="repo-card">
+      <h1><i class="ti ti-folder-search" style="color:var(--accent); margin-right:6px;"></i>Select an app repo</h1>
+      <p class="desc">Pick the folder that directly contains that app's <code>package.json</code>.</p>
+
+      <div class="repo-manual-row">
+        <input id="repo-manual-input" type="text" placeholder="/Users/you/PunchhProjects/KuraRewards" />
+        <button class="primary" id="repo-manual-btn">Use this path</button>
+      </div>
+      <p id="repo-error" class="repo-error"></p>
+      <p id="repo-success" class="repo-success"></p>
+
+      <div class="divider-row"><span class="line"></span><span>or browse</span><span class="line"></span></div>
+
+      <div class="breadcrumb" id="repo-breadcrumb"></div>
+      <div class="browser-list" id="repo-browser"></div>
+    </div>
+  </div>
+
+  <div id="dashboard-screen" class="hidden">
+    <header class="app-header">
+      <div>
+        <h1><i class="ti ti-search" style="color:var(--accent); font-size:20px;"></i>CodeSherlock</h1>
+        <p class="meta" id="header-meta">Loading...</p>
+      </div>
+      <div class="header-actions">
+        <button id="export-btn"><i class="ti ti-download"></i> Export JSON</button>
+        <button id="rescan-btn"><i class="ti ti-refresh"></i> Rescan</button>
+        <button id="change-repo-btn"><i class="ti ti-folder"></i> Change repo</button>
+        <button id="reconnect-btn"><i class="ti ti-settings"></i></button>
+      </div>
+    </header>
+
+    <div id="fetch-warning"></div>
+
+    <div id="scan-loading" class="empty-state hidden">
+      <span class="spinner"></span>
+      <p>Scanning proto files and fetching matched source...</p>
+    </div>
+
+    <div id="scan-content" class="hidden">
+      <div class="cards-grid" id="metric-cards"></div>
+
+      <div class="toolbar">
+        <div class="chips" id="chips">
+          <button class="chip active" data-filter="all">All</button>
+          <button class="chip" data-filter="heavy">Heavy</button>
+          <button class="chip" data-filter="moderate">Moderate</button>
+          <button class="chip" data-filter="cosmetic">Cosmetic</button>
+          <button class="chip" data-filter="addition">Addition</button>
+          <button class="chip" data-filter="unresolved">Unresolved</button>
+          <button class="chip" data-filter="empty">Empty</button>
+        </div>
+        <input class="search-input" id="search-input" type="text" placeholder="Filter by filename..." />
+      </div>
+
+      <div class="table-wrap">
+        <div class="table-head">
+          <span>File</span><span>Package</span><span>Methods</span><span>Verdict</span><span></span>
+        </div>
+        <div id="rows"></div>
+      </div>
+
+      <div id="unverified-section"></div>
+      <div id="patch-section"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const verdictMeta = {
+  heavy: { label: "Heavy rewrite", bg: "var(--danger-bg)", fg: "var(--danger)" },
+  moderate: { label: "Moderate", bg: "var(--warning-bg)", fg: "var(--warning)" },
+  cosmetic: { label: "Cosmetic", bg: "var(--success-bg)", fg: "var(--success)" },
+  addition: { label: "New addition", bg: "var(--accent-bg)", fg: "var(--accent)" },
+  unresolved: { label: "Unresolved", bg: "var(--surface-2)", fg: "var(--text-muted)" },
+  empty: { label: "Empty", bg: "var(--surface-2)", fg: "var(--text-muted)" }
+};
+
+let lastReport = null;
+let openRowIndex = null;
+let activeFilter = "all";
+let searchTerm = "";
+
+function hideAllScreens() {
+  ["setup-screen", "repo-screen", "dashboard-screen"].forEach((id) => document.getElementById(id).classList.add("hidden"));
+}
+
+async function init() {
+  const status = await fetch("/api/status").then((r) => r.json());
+  hideAllScreens();
+  if (!status.hasToken) {
+    document.getElementById("setup-screen").classList.remove("hidden");
+    return;
+  }
+  if (!status.hasValidRepo) {
+    document.getElementById("repo-screen").classList.remove("hidden");
+    browseTo(status.appRoot || null);
+    return;
+  }
+  document.getElementById("dashboard-screen").classList.remove("hidden");
+  document.getElementById("header-meta").textContent = status.appRoot;
+  runScan();
+}
+
+let currentBrowsePath = null;
+
+async function browseTo(dirPath) {
+  const result = await fetch("/api/browse?path=" + encodeURIComponent(dirPath || "")).then((r) => r.json());
+  if (!result.ok) {
+    document.getElementById("repo-browser").innerHTML = '<div class="browser-empty">Could not open that folder.</div>';
+    return;
+  }
+  currentBrowsePath = result.path;
+  renderBreadcrumb(result);
+  renderBrowserList(result);
+}
+
+function renderBreadcrumb(result) {
+  const el = document.getElementById("repo-breadcrumb");
+  el.innerHTML = "";
+  if (result.parent) {
+    const up = document.createElement("button");
+    up.innerHTML = '<i class="ti ti-arrow-left"></i> up';
+    up.addEventListener("click", () => browseTo(result.parent));
+    el.appendChild(up);
+    el.appendChild(document.createTextNode("  "));
+  }
+  const label = document.createElement("span");
+  label.textContent = result.path;
+  el.appendChild(label);
+}
+
+function renderBrowserList(result) {
+  const container = document.getElementById("repo-browser");
+  container.innerHTML = "";
+
+  if (result.isAppRepo) {
+    const selectHere = document.createElement("div");
+    selectHere.className = "browser-row";
+    selectHere.innerHTML =
+      '<span class="name"><i class="ti ti-folder-check" style="color:var(--accent);"></i> Use this folder</span>' +
+      '<span class="badge-mini">app repo</span>';
+    selectHere.addEventListener("click", () => selectRepo(result.path));
+    container.appendChild(selectHere);
+  }
+
+  if (result.entries.length === 0 && !result.isAppRepo) {
+    const empty = document.createElement("div");
+    empty.className = "browser-empty";
+    empty.textContent = "No subfolders here.";
+    container.appendChild(empty);
+    return;
+  }
+
+  result.entries.forEach((entry) => {
+    const row = document.createElement("div");
+    row.className = "browser-row";
+    row.innerHTML =
+      '<span class="name"><i class="ti ti-folder"></i> ' +
+      escapeHtml(entry.name) +
+      "</span>" +
+      (entry.isAppRepo ? '<span class="badge-mini">app repo</span>' : "");
+    row.addEventListener("click", () => {
+      if (entry.isAppRepo) selectRepo(entry.path);
+      else browseTo(entry.path);
+    });
+    container.appendChild(row);
+  });
+}
+
+async function selectRepo(candidatePath) {
+  const err = document.getElementById("repo-error");
+  const ok = document.getElementById("repo-success");
+  err.style.display = "none";
+  ok.style.display = "none";
+
+  const res = await fetch("/api/repo", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ path: candidatePath })
+  });
+  const data = await res.json();
+  if (!data.ok) {
+    err.textContent = repoErrorMessage(data.reason);
+    err.style.display = "block";
+    return;
+  }
+  ok.textContent = "Using " + data.appName + (data.punchhPackageCount ? " (" + data.punchhPackageCount + " punchh packages)" : "");
+  ok.style.display = "block";
+  setTimeout(init, 400);
+}
+
+function repoErrorMessage(reason) {
+  if (reason === "path-does-not-exist") return "That path doesn't exist.";
+  if (reason === "not-a-directory") return "That's not a folder.";
+  if (reason === "no-package-json") return "No package.json in that folder -- pick the folder that has it directly inside.";
+  if (reason === "invalid-package-json") return "package.json in that folder couldn't be read.";
+  return "Enter a path first.";
+}
+
+document.getElementById("repo-manual-btn").addEventListener("click", () => {
+  const val = document.getElementById("repo-manual-input").value.trim();
+  if (!val) {
+    const err = document.getElementById("repo-error");
+    err.textContent = "Enter a path first.";
+    err.style.display = "block";
+    return;
+  }
+  selectRepo(val);
+});
+
+document.getElementById("change-repo-btn").addEventListener("click", () => {
+  hideAllScreens();
+  document.getElementById("repo-screen").classList.remove("hidden");
+  browseTo(currentBrowsePath);
+});
+
+document.getElementById("toggle-visibility").addEventListener("click", function () {
+  const input = document.getElementById("pat");
+  const icon = this.querySelector("i");
+  const showing = input.type === "text";
+  input.type = showing ? "password" : "text";
+  icon.className = showing ? "ti ti-eye" : "ti ti-eye-off";
+});
+
+document.getElementById("connect-btn").addEventListener("click", async function () {
+  const input = document.getElementById("pat");
+  const err = document.getElementById("setup-error");
+  const label = document.getElementById("connect-label");
+  const btn = this;
+
+  if (!input.value.trim()) {
+    err.textContent = "Enter a token first.";
+    err.style.display = "block";
+    return;
+  }
+  err.style.display = "none";
+  label.textContent = "Verifying access...";
+  btn.disabled = true;
+
+  try {
+    const res = await fetch("/api/token", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token: input.value.trim() })
+    });
+    const data = await res.json();
+    if (!data.ok) {
+      err.textContent = data.message || "Could not verify that token.";
+      err.style.display = "block";
+      label.textContent = "Connect and scan";
+      btn.disabled = false;
+      return;
+    }
+    label.textContent = "Token verified";
+    document.getElementById("connect-btn").querySelector("i").className = "ti ti-check";
+    setTimeout(init, 500);
+  } catch (e) {
+    err.textContent = "Could not reach the local server. Try again.";
+    err.style.display = "block";
+    label.textContent = "Connect and scan";
+    btn.disabled = false;
+  }
+});
+
+document.getElementById("pat").addEventListener("input", function () {
+  document.getElementById("setup-error").style.display = "none";
+});
+
+document.getElementById("reconnect-btn").addEventListener("click", async function () {
+  if (!confirm("Disconnect this GitHub token? You'll need to reconnect before scanning again.")) return;
+  await fetch("/api/token/clear", { method: "POST" });
+  init();
+});
+
+document.getElementById("rescan-btn").addEventListener("click", runScan);
+
+document.getElementById("export-btn").addEventListener("click", function () {
+  if (!lastReport) return;
+  const blob = new Blob([JSON.stringify(lastReport, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "codesherlock-report.json";
+  a.click();
+  URL.revokeObjectURL(url);
+});
+
+document.getElementById("search-input").addEventListener("input", function () {
+  searchTerm = this.value.toLowerCase();
+  renderRows();
+});
+
+document.getElementById("chips").addEventListener("click", function (e) {
+  const btn = e.target.closest(".chip");
+  if (!btn) return;
+  document.querySelectorAll(".chip").forEach((c) => c.classList.remove("active"));
+  btn.classList.add("active");
+  activeFilter = btn.dataset.filter;
+  renderRows();
+});
+
+async function runScan() {
+  document.getElementById("scan-content").classList.add("hidden");
+  document.getElementById("scan-loading").classList.remove("hidden");
+  try {
+    const report = await fetch("/api/scan").then((r) => r.json());
+    if (!report.ok) {
+      document.getElementById("scan-loading").innerHTML = '<p style="color:var(--danger)">' + (report.message || "Scan failed") + "</p>";
+      return;
+    }
+    lastReport = report;
+    openRowIndex = null;
+    renderAll();
+  } catch (e) {
+    document.getElementById("scan-loading").innerHTML = '<p style="color:var(--danger)">Could not reach the local server.</p>';
+  }
+}
+
+function renderAll() {
+  document.getElementById("scan-loading").classList.add("hidden");
+  document.getElementById("scan-content").classList.remove("hidden");
+  document.getElementById("header-meta").textContent =
+    lastReport.appRoot + " · scanned " + new Date(lastReport.scannedAt).toLocaleString();
+  renderFetchWarning();
+  renderMetrics();
+  renderRows();
+  renderUnverified();
+  renderPatches();
+}
+
+function renderFetchWarning() {
+  const el = document.getElementById("fetch-warning");
+  const failed = Object.entries(lastReport.fetchResults || {}).filter(([, r]) => !r.ok);
+  if (failed.length === 0) {
+    el.innerHTML = "";
+    return;
+  }
+  el.innerHTML =
+    '<div class="fetch-warning"><p class="title"><i class="ti ti-alert-triangle"></i>Source fetch failed -- everything below is unresolved, not scored</p>' +
+    failed
+      .map(
+        ([pkg, r]) =>
+          '<p class="line">' + escapeHtml(pkg) + ": " + escapeHtml(r.reason) + (r.detail ? " -- " + escapeHtml(r.detail) : "") + "</p>"
+      )
+      .join("") +
+    "</div>";
+}
+
+function renderMetrics() {
+  const s = lastReport.summary;
+  const cards = [
+    { label: "Proto files", value: s.totalProtoFiles, color: "var(--text-primary)" },
+    { label: "Heavy rewrite", value: s.heavy, color: "var(--danger)" },
+    { label: "Moderate", value: s.moderate, color: "var(--warning)" },
+    { label: "Cosmetic", value: s.cosmetic, color: "var(--success)" },
+    { label: "New addition", value: s.addition, color: "var(--accent)" },
+    { label: "Unresolved / empty", value: s.unresolved + s.empty, color: "var(--text-muted)" }
+  ];
+  document.getElementById("metric-cards").innerHTML = cards
+    .map(
+      (c) =>
+        '<div class="metric-card"><p class="label" style="color:' +
+        c.color +
+        '">' +
+        c.label +
+        '</p><p class="value">' +
+        c.value +
+        "</p></div>"
+    )
+    .join("");
+}
+
+function escapeHtml(s) {
+  return s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+
+function renderRows() {
+  const container = document.getElementById("rows");
+  container.innerHTML = "";
+  const files = lastReport.files.filter((f) => {
+    if (activeFilter !== "all" && f.verdict !== activeFilter) return false;
+    if (searchTerm && !f.file.toLowerCase().includes(searchTerm)) return false;
+    return true;
+  });
+
+  if (files.length === 0) {
+    container.innerHTML = '<div class="empty-state">No proto files match this filter.</div>';
+    return;
+  }
+
+  files.forEach((f, i) => {
+    const vm = verdictMeta[f.verdict];
+    const row = document.createElement("div");
+    row.className = "row";
+
+    const head = document.createElement("div");
+    head.className = "row-head";
+    head.innerHTML =
+      '<span class="filename">' +
+      escapeHtml(f.file) +
+      '</span><span class="pkg">' +
+      escapeHtml(f.package || "-") +
+      "</span><span>" +
+      f.methods +
+      '</span><span><span class="badge" style="background:' +
+      vm.bg +
+      "; color:" +
+      vm.fg +
+      '">' +
+      vm.label +
+      '</span></span><i class="ti ti-chevron-down chev' +
+      (openRowIndex === i ? " open" : "") +
+      '"></i>';
+    head.addEventListener("click", () => {
+      openRowIndex = openRowIndex === i ? null : i;
+      renderRows();
+    });
+    row.appendChild(head);
+
+    if (openRowIndex === i && f.overrides && f.overrides.length > 0) {
+      const panel = document.createElement("div");
+      panel.className = "diff-panel";
+      f.overrides.forEach((ov) => {
+        const block = document.createElement("div");
+        block.className = "method-block";
+        const nameRow = document.createElement("p");
+        nameRow.className = "method-name";
+        nameRow.innerHTML =
+          "<span>" +
+          escapeHtml(ov.className) +
+          (ov.isStatic ? "." : ".prototype.") +
+          escapeHtml(ov.method) +
+          "()</span>";
+        block.appendChild(nameRow);
+        (ov.diff || []).forEach((d) => {
+          const line = document.createElement("div");
+          line.className = "diff-line " + (d.t === "add" ? "diff-add" : d.t === "del" ? "diff-del" : "diff-ctx");
+          line.textContent = (d.t === "add" ? "+ " : d.t === "del" ? "- " : "  ") + d.s;
+          block.appendChild(line);
+        });
+        panel.appendChild(block);
+      });
+      row.appendChild(panel);
+    }
+
+    container.appendChild(row);
+  });
+}
+
+function renderUnverified() {
+  const el = document.getElementById("unverified-section");
+  if (!lastReport.notVerifiedPackages || lastReport.notVerifiedPackages.length === 0) {
+    el.innerHTML = "";
+    return;
+  }
+  el.innerHTML =
+    '<p class="section-title">Not diff-verified yet</p>' +
+    lastReport.notVerifiedPackages
+      .map((p) => '<div class="unverified-item">' + escapeHtml(p) + " -- overrides are counted, not diffed</div>")
+      .join("");
+}
+
+function renderPatches() {
+  const el = document.getElementById("patch-section");
+  if (!lastReport.patchPackageEntries || lastReport.patchPackageEntries.length === 0) {
+    el.innerHTML = "";
+    return;
+  }
+  el.innerHTML =
+    '<p class="section-title">patch-package entries</p>' +
+    lastReport.patchPackageEntries.map((p) => '<div class="patch-item">' + escapeHtml(p) + "</div>").join("");
+}
+
+init();
+</script>
+</body>
+</html>

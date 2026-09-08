@@ -1,0 +1,18 @@
+{
+  "_comment": "Fill in repoUrl for each package before real diffing works. tagPrefix is prepended to the npm version to form the git tag, e.g. tagPrefix 'v' + version '4.0.2' -> tag 'v4.0.2'.",
+  "diffVerified": {
+    "@punchh/react-native-punchh-components": {
+      "repoUrl": "https://github.com/punchh/react-native-punchh-components.git",
+      "tagPrefix": "v"
+    },
+    "@punchh/react-native-punchh-olo": {
+      "repoUrl": "https://github.com/punchh/olo-framework-reactnative.git",
+      "tagPrefix": "v"
+    }
+  },
+  "notVerified": [
+    "@punchh/react-native-menu-framework",
+    "@punchh/react-native-punchh-payment-processor",
+    "@punchh/react-native-punchh-pickup"
+  ]
+}
